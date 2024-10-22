@@ -1,34 +1,74 @@
-const {test, expect}=require('@playwright/test')
+const { test, expect } = require('@playwright/test');
 
-test('swagLabs', async({page}) =>{
+test('SwagLabs', async ({ page }) => {
+  // Navigate to SwagLabs
+  await page.goto('https://www.saucedemo.com/');
 
-await page.goto('https://www.saucedemo.com/');
+  // Login
+  await page.locator('#user-name').fill('standard_user');
+  await page.locator('#password').fill('secret_sauce');
+  await page.locator('#login-button').click();
 
-await page.locator('#user-name').fill('standard_user');
+  // Verify logo visibility
+  const logo = page.locator('.app_logo');
+  await expect(logo).toBeVisible();
 
-await page.getByPlaceholder('Password').fill('secret_sauce');
+  // Select sorting option
+  const dropdownLocator = page.locator('.product_sort_container');
+  await dropdownLocator.selectOption({ index: 2 });
 
-await page. locator('#login-button').click();
+  // Verify dropdown options count
+  const dropdownOptions = page.locator('.product_sort_container option');
+  await expect(dropdownOptions).toHaveCount(4);
 
-const Logo= await page.locator("//div[@class='app_logo']")
+  // Add item to cart
+  const addToCart = page.locator('#add-to-cart-sauce-labs-backpack');
+  await addToCart.click();
 
-await expect (Logo).toBeVisible
+  await page.pause();
 
-const dropdownLocator = page.locator("//select[@class='product_sort_container']")
+  // Proceed to checkout
+  await page.locator('.shopping_cart_link').click();
+  await page.locator('#checkout').click();
 
-await dropdownLocator.selectOption({ index : 2 });
+// Fill checkout form
+await page.getByPlaceholder('First Name').fill('Stanley');
+await page.getByPlaceholder('Last Name').fill('Ovorawen');
+await page.getByPlaceholder('Zip/Postal Code').fill('1200');
 
-const dropdownoptions = page.locator(".product_sort_container option")
+// Continue checkout
+await page.locator('#continue').click();
+await page.locator('#finish').click();
 
-await expect(dropdownoptions).toHaveCount(4);
+// Return to products
+const backToProducts = page.locator('[data-test="back-to-products"]');
+await backToProducts.click();
+
+// Verify home page visibility
+const home = page.locator('.app_logo');
+await expect(home).toBeVisible();
+
+// Remove item from cart
+await page.locator('#add-to-cart-sauce-labs-onesie').click();
+const removeButton = page.getByRole('button', { name: 'Remove' });
+await removeButton.click();
+
+//open cart
+await page.getByTestId('shopping-cart-link').click();
+const onsie = await page. getByText('Sauce Labs Onesie')
+expect (onsie ).toBeVisible;
+
+// Continue shopping
+await page.getByTestId('continue-shopping').click();
+
+await page.pause();
+
+//Back to home page //add another item to cart
+await page. getByTestId('add-to-cart-sauce-labs-bolt-t-shirt').click()
 
 
-await page.  waitForTimeout(5000);
-
-
-
-
-
-
+//Assert number of items in cart
+const cartItems= page.getByTestId('shopping-cart-link')
+expect (cartItems).toHaveCount(1);
 
 })
