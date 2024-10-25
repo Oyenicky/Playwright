@@ -73,11 +73,12 @@ expect (cartItems).toHaveCount(1);
 
 //Side Menu
 await page.getByText('Open Menu').click();
-const menu= await page.locator('#menu_button_container').textContent()
-expect(menu).toHaveText('All Items')
-expect(menu).toHaveText('About')
-expect(menu).toHaveText('Logout')
-expect(menu).toHaveText('Reset App State')
+const sideMenuContent= await page.locator('#menu_button_container').textContent();
+expect(sideMenuContent.includes ('All Items')).toBeTruthy();
+expect(sideMenuContent.includes ('About')).toBeTruthy();
+expect(sideMenuContent.includes('Logout')).toBeTruthy();
+expect(sideMenuContent.includes('Reset App State')).toBeTruthy();
+
 
 //logout
 await page. getByTestId('logout-sidebar-link').click();
