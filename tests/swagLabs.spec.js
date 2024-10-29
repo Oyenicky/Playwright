@@ -83,6 +83,14 @@ expect(sideMenuContent.includes('Reset App State')).toBeTruthy();
 //logout
 await page. getByTestId('logout-sidebar-link').click();
 
+//logout user 
+await page.getByPlaceholder('Username').fill('locked_out_user')
+await page.getByPlaceholder('Password').fill('secret_sauce')
+await page.getByRole('button', {type: 'submit'}).click();
+
+//Error message
+const errorMessage= await page.getByText('Epic sadface: Sorry, this user has been locked out.').toBeVisible
+await expect(errorMessage).toBeVisible
 
 
 })
