@@ -17,19 +17,16 @@ test('SwagLabs', async ({ page }) => {
   const dropdownLocator = page.locator('.product_sort_container');
   await dropdownLocator.selectOption({ index: 2 });
 
-  // Verify dropdown options count
+  // Verify sorting options count
   const dropdownOptions = page.locator('.product_sort_container option');
   await expect(dropdownOptions).toHaveCount(4);
 
   // Add item to cart
   const addToCart = page.locator('#add-to-cart-sauce-labs-backpack');
   await addToCart.click();
-
-  await page.pause();
-
-  // Proceed to checkout
-  await page.locator('.shopping_cart_link').click();
-  await page.locator('#checkout').click();
+// Proceed to checkout
+await page.locator('.shopping_cart_link').click();
+await page.locator('#checkout').click();
 
 // Fill checkout form
 await page.getByPlaceholder('First Name').fill('Stanley');
@@ -53,44 +50,40 @@ await page.locator('#add-to-cart-sauce-labs-onesie').click();
 const removeButton = page.getByRole('button', { name: 'Remove' });
 await removeButton.click();
 
-//open cart
+// Open cart
 await page.getByTestId('shopping-cart-link').click();
-const onsie = await page. getByText('Sauce Labs Onesie')
-expect (onsie ).toBeVisible;
+const onesie = await page.getByText('Sauce Labs Onesie');
+expect(onesie).toBeVisible();
 
 // Continue shopping
 await page.getByTestId('continue-shopping').click();
 
-await page.pause();
+// Back to home page
+// Add another item to cart
+await page.getByTestId('add-to-cart-sauce-labs-bolt-t-shirt').click();
 
-//Back to home page //add another item to cart
-await page. getByTestId('add-to-cart-sauce-labs-bolt-t-shirt').click()
+// Assert number of items in cart
+const cartItems = page.locator('.shopping_cart_badge');
+await expect(cartItems).toHaveText('1');
 
-
-//Assert number of items in cart
-const cartItems= page.getByTestId('shopping-cart-link')
-expect (cartItems).toHaveCount(1);
-
-//Side Menu
+// Side Menu
 await page.getByText('Open Menu').click();
-const sideMenuContent= await page.locator('#menu_button_container').textContent();
-expect(sideMenuContent.includes ('All Items')).toBeTruthy();
-expect(sideMenuContent.includes ('About')).toBeTruthy();
-expect(sideMenuContent.includes('Logout')).toBeTruthy();
-expect(sideMenuContent.includes('Reset App State')).toBeTruthy();
+const sideMenuContent = await page.locator('#menu_button_container').textContent();
+await expect(sideMenuContent).toContain('All Items');
+await expect(sideMenuContent).toContain('About');
+await expect(sideMenuContent).toContain('Logout');
+await expect(sideMenuContent).toContain('Reset App State');
 
+// Logout
+await page.getByTestId('logout-sidebar-link').click();
 
-//logout
-await page. getByTestId('logout-sidebar-link').click();
+// Logout user
+await page.getByPlaceholder('Username').fill('locked_out_user');
+await page.getByPlaceholder('Password').fill('secret_sauce');
+await page.getByRole('button', { type: 'submit' }).click();
 
-//logout user 
-await page.getByPlaceholder('Username').fill('locked_out_user')
-await page.getByPlaceholder('Password').fill('secret_sauce')
-await page.getByRole('button', {type: 'submit'}).click();
-
-//Error message
-const errorMessage= await page.getByText('Epic sadface: Sorry, this user has been locked out.').toBeVisible
-await expect(errorMessage).toBeVisible
-
-
-})
+// Error message
+const errorMessage = page.getByText('Epic sadface: Sorry, this user has been locked out.');
+await expect(errorMessage).toBeVisible();
+await page.screenshot({ path: 'screenshot.png' });
+});
