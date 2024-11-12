@@ -11,14 +11,12 @@ test('sidemenu', async({page})=>{
 //const sideMenuContent = await page.locator('#menu_button_container').textContent();
 
     //open menu
-    await page.getByRole('button', {type:'button'}).click;
-    const sideMenuContent= await page.locator('.bm-menu-wrap').textContent
+    page.getByRole('button', {type:'button'}).click;
+    const sideMenuContent = await page.locator('#menu_button_container').textContent();
     const menuItems = ['All Items', 'About', 'Logout', 'Reset App State'];
-     for( const item of menuItems){
+    for (const item of menuItems) {
         expect(sideMenuContent).toContain(item);
-        break;
-
-     }
+    }
 
 
     
