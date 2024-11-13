@@ -9,5 +9,5 @@ test('Verify logged-out user cannot login', async ({ page }) => {
     // Error message
     const errorMessage = page.getByText('Epic sadface: Sorry, this user has been locked out.');
     await expect(errorMessage).toBeVisible();
-    //await page.screenshot({ path: 'screenshot.png' });
+    await page.screenshot({ path: 'screenshot.png' });
 });
