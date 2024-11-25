@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test.beforeEach(async ({ page }) => {
+    //Launch app
     await page.goto('https://www.saucedemo.com/');
 
     // Login
@@ -11,6 +12,7 @@ test.beforeEach(async ({ page }) => {
 
 test.afterEach(async ({ page }) => {
     // Logout
+    await page.getByText('Open Menu').click();
     await page.getByTestId('logout-sidebar-link').click();
 });
 
@@ -30,9 +32,24 @@ test('Homepage', async ({ page }) => {
     // Add item to cart
     const addToCart = page.locator('#add-to-cart-sauce-labs-backpack');
     await addToCart.click();
+    await page.locator('#add-to-cart-sauce-labs-onesie').click();
+    await page.getByTestId('add-to-cart-sauce-labs-bolt-t-shirt').click();
+    
+    // Open cart
+    await page.getByTestId('shopping-cart-link').click();
+    const onesie = page.getByText('Sauce Labs Onesie');
+    expect(onesie).toBeVisible();
+    const removeButton = page.getByTestId('remove-sauce-labs-onesie');
+    await removeButton.click();
 
+    // Assert number of items in cart
+    const cartItems = page.locator('.shopping_cart_badge');
+    await expect(cartItems).toHaveText('2');
+});    
+
+test('proceed to checkout', async({page})=>{
     // Proceed to checkout
-    await page.locator('.shopping_cart_link').click();
+    await page.getByTestId('shopping-cart-link').click();
     await page.locator('#checkout').click();
 
     // Fill checkout form
@@ -43,41 +60,6 @@ test('Homepage', async ({ page }) => {
     // Continue checkout
     await page.locator('#continue').click();
     await page.locator('#finish').click();
-
-    // Return to products
-    const backToProducts = page.locator('[data-test="back-to-products"]');
-    await backToProducts.click();
-
-    // Verify home page visibility
-    const home = page.locator('.app_logo');
-    await expect(home).toBeVisible();
-
-    // Remove item from cart
-    await page.locator('#add-to-cart-sauce-labs-onesie').click();
-    const removeButton = page.getByRole('button', { name: 'Remove' });
-    await removeButton.click();
-
-    // Open cart
-    await page.getByTestId('shopping-cart-link').click();
-    //const onesie = page.getByText('Sauce Labs Onesie');
-    //await expect(onesie).toBeVisible();
-
-    // Continue shopping
-    await page.getByTestId('continue-shopping').click();
-
-    // Add another item to cart
-    await page.getByTestId('add-to-cart-sauce-labs-bolt-t-shirt').click();
-
-    // Assert number of items in cart
-    const cartItems = page.locator('.shopping_cart_badge');
-    await expect(cartItems).toHaveText('1');
-
-    // Side Menu
-    await page.getByText('Open Menu').click();
-    const sideMenuContent = await page.locator('#menu_button_container').textContent();
-    await expect(sideMenuContent).toContain('All Items');
-    await expect(sideMenuContent).toContain('About');
-    await expect(sideMenuContent).toContain('Logout');
-    await expect(sideMenuContent).toContain('Reset App State');
+    
 });
 

@@ -8,6 +8,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     trace: 'on',
+    testIdAttribute: 'data-test'
   },
   projects: [
     {
